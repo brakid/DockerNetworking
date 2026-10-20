@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="880" viewBox="0 0 1200 880" font-family="Helvetica, Arial, sans-serif">
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1050" viewBox="0 0 1200 1050" font-family="Helvetica, Arial, sans-serif">
   <defs>
     <marker id="arrow" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto">
       <path d="M0,0 L10,4 L0,8 Z" fill="#2c3e50"/>
@@ -6,25 +6,28 @@
     <marker id="arrowblue" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto">
       <path d="M0,0 L10,4 L0,8 Z" fill="#1f6fb2"/>
     </marker>
+    <marker id="arrowgreen" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto">
+      <path d="M0,0 L10,4 L0,8 Z" fill="#1e8449"/>
+    </marker>
   </defs>
 
   <!-- background -->
-  <rect width="1200" height="880" fill="#ffffff"/>
+  <rect width="1200" height="1050" fill="#ffffff"/>
 
   <!-- title -->
   <text x="40" y="46" font-size="26" font-weight="bold" fill="#1a1a1a">Docker Compose project &#8220;networking&#8221; &#8212; component communication</text>
-  <text x="40" y="72" font-size="14" fill="#666">Messages flow: Browser &#8594; service &#8594; RabbitMQ &#8594; worker &#8594; Redis &#8594; service &#8594; Browser</text>
+  <text x="40" y="72" font-size="14" fill="#666">Main flow: Browser &#8594; service &#8594; RabbitMQ &#8594; worker &#8594; Redis &#8594; service &#8594; Browser   &#183;   Metrics flow: RabbitMQ &#8594; metrics &#8594; Redis TimeSeries &#8594; service &#8594; Browser</text>
 
   <!-- ================= networks ================= -->
   <!-- frontend network -->
-  <rect x="40" y="240" width="500" height="560" rx="16" fill="#eef5fd" stroke="#4a90d9" stroke-width="2"/>
+  <rect x="40" y="240" width="500" height="700" rx="16" fill="#eef5fd" stroke="#4a90d9" stroke-width="2"/>
   <text x="60" y="268" font-size="15" font-weight="bold" fill="#1f6fb2">frontend network &#183; 172.16.1.0/24</text>
   <text x="60" y="288" font-size="12" fill="#1f6fb2">reachable from outside / has internet</text>
 
   <!-- backend network -->
-  <rect x="440" y="240" width="720" height="560" rx="16" fill="#fdf4ec" stroke="#d9822b" stroke-width="2" stroke-dasharray="8,5"/>
-  <text x="580" y="268" font-size="15" font-weight="bold" fill="#a5611a">backend network &#183; 172.16.0.0/24</text>
-  <text x="580" y="288" font-size="12" fill="#a5611a">internal: true &#8212; no internet, no exposed ports</text>
+  <rect x="440" y="240" width="720" height="700" rx="16" fill="#fdf4ec" stroke="#d9822b" stroke-width="2" stroke-dasharray="8,5"/>
+  <text x="1140" y="268" font-size="15" font-weight="bold" text-anchor="end" fill="#a5611a">backend network &#183; 172.16.0.0/24</text>
+  <text x="1140" y="288" font-size="12" text-anchor="end" fill="#a5611a">internal: true &#8212; no internet, no exposed ports</text>
 
   <!-- ================= nodes ================= -->
   <!-- browser -->
@@ -43,66 +46,94 @@
   <rect x="380" y="430" width="220" height="116" rx="10" fill="#ffffff" stroke="#2c3e50" stroke-width="2.4"/>
   <text x="490" y="458" font-size="15" font-weight="bold" text-anchor="middle" fill="#1a1a1a">service</text>
   <text x="490" y="479" font-size="12" text-anchor="middle" fill="#555">Bun 1.4 (TypeScript) REST API</text>
-  <text x="490" y="498" font-size="12" text-anchor="middle" fill="#888">GET /trigger, /result/:id</text>
+  <text x="490" y="498" font-size="12" text-anchor="middle" fill="#888">/trigger &#183; /result/:id &#183; /messages</text>
   <text x="490" y="517" font-size="12" text-anchor="middle" fill="#888">host port 3000 &#8594; 3000</text>
   <text x="490" y="536" font-size="11" font-style="italic" text-anchor="middle" fill="#2c3e50">member of BOTH networks</text>
 
   <!-- database -->
-  <rect x="770" y="320" width="250" height="96" rx="10" fill="#ffffff" stroke="#555" stroke-width="1.6"/>
-  <text x="895" y="348" font-size="15" font-weight="bold" text-anchor="middle" fill="#1a1a1a">database</text>
-  <text x="895" y="369" font-size="12" text-anchor="middle" fill="#555">Redis (alpine) :6379</text>
-  <text x="895" y="388" font-size="12" text-anchor="middle" fill="#888">id counter + worker results</text>
-  <text x="895" y="406" font-size="11" font-style="italic" text-anchor="middle" fill="#999">healthcheck: redis-cli ping</text>
+  <rect x="770" y="310" width="250" height="96" rx="10" fill="#ffffff" stroke="#555" stroke-width="1.6"/>
+  <text x="895" y="338" font-size="15" font-weight="bold" text-anchor="middle" fill="#1a1a1a">database</text>
+  <text x="895" y="359" font-size="12" text-anchor="middle" fill="#555">Redis (alpine) :6379</text>
+  <text x="895" y="378" font-size="12" text-anchor="middle" fill="#888">counter, results &amp; TimeSeries</text>
+  <text x="895" y="396" font-size="11" font-style="italic" text-anchor="middle" fill="#999">healthcheck: redis-cli ping</text>
 
   <!-- rabbitmq -->
-  <rect x="770" y="470" width="250" height="96" rx="10" fill="#ffffff" stroke="#555" stroke-width="1.6"/>
-  <text x="895" y="498" font-size="15" font-weight="bold" text-anchor="middle" fill="#1a1a1a">rabbitmq</text>
-  <text x="895" y="519" font-size="12" text-anchor="middle" fill="#555">RabbitMQ 4 (alpine) :5672</text>
-  <text x="895" y="538" font-size="12" text-anchor="middle" fill="#888">quorum queue &#8220;messages&#8221;</text>
-  <text x="895" y="556" font-size="11" font-style="italic" text-anchor="middle" fill="#999">healthcheck: rabbitmq-diagnostics</text>
+  <rect x="770" y="440" width="250" height="96" rx="10" fill="#ffffff" stroke="#555" stroke-width="1.6"/>
+  <text x="895" y="468" font-size="15" font-weight="bold" text-anchor="middle" fill="#1a1a1a">rabbitmq</text>
+  <text x="895" y="489" font-size="12" text-anchor="middle" fill="#555">RabbitMQ 4 (alpine) :5672</text>
+  <text x="895" y="508" font-size="12" text-anchor="middle" fill="#888">quorum queue &#8220;messages&#8221;</text>
+  <text x="895" y="526" font-size="11" font-style="italic" text-anchor="middle" fill="#999">healthcheck: rabbitmq-diagnostics</text>
 
   <!-- worker -->
-  <rect x="770" y="620" width="250" height="106" rx="10" fill="#ffffff" stroke="#555" stroke-width="1.6"/>
-  <text x="895" y="648" font-size="15" font-weight="bold" text-anchor="middle" fill="#1a1a1a">worker &#215; 3 replicas</text>
-  <text x="895" y="669" font-size="12" text-anchor="middle" fill="#555">Python 3.14 + pika/redis</text>
-  <text x="895" y="688" font-size="12" text-anchor="middle" fill="#888">consumes queue, writes result</text>
-  <text x="895" y="708" font-size="11" font-style="italic" text-anchor="middle" fill="#999">round-robin, prefetch = 1</text>
+  <rect x="770" y="570" width="250" height="106" rx="10" fill="#ffffff" stroke="#555" stroke-width="1.6"/>
+  <text x="895" y="598" font-size="15" font-weight="bold" text-anchor="middle" fill="#1a1a1a">worker &#215; 3 replicas</text>
+  <text x="895" y="619" font-size="12" text-anchor="middle" fill="#555">Python 3.14 + pika/redis</text>
+  <text x="895" y="638" font-size="12" text-anchor="middle" fill="#888">consumes queue, writes result</text>
+  <text x="895" y="658" font-size="11" font-style="italic" text-anchor="middle" fill="#999">round-robin, prefetch = 1</text>
+
+  <!-- metrics -->
+  <rect x="770" y="710" width="250" height="106" rx="10" fill="#ffffff" stroke="#1e8449" stroke-width="2"/>
+  <text x="895" y="738" font-size="15" font-weight="bold" text-anchor="middle" fill="#1a1a1a">metrics</text>
+  <text x="895" y="759" font-size="12" text-anchor="middle" fill="#555">Python 3.14 + schedule</text>
+  <text x="895" y="778" font-size="12" text-anchor="middle" fill="#888">polls queue depth &#8594; 1&#215;/s</text>
+  <text x="895" y="798" font-size="11" font-style="italic" text-anchor="middle" fill="#1e8449">backend only &#183; build-metrics.sh</text>
 
   <!-- ================= edges ================= -->
   <!-- browser -> ui -->
   <path d="M 160 194 L 195 330" stroke="#2c3e50" stroke-width="1.8" fill="none" marker-end="url(#arrow)"/>
-  <rect x="30" y="222" width="180" height="20" fill="#ffffff" opacity="0.9"/>
-  <text x="36" y="237" font-size="12" fill="#2c3e50">GET :8080 &#8212; HTML + JS</text>
 
   <!-- browser -> service -->
   <path d="M 290 152 Q 460 175 470 430" stroke="#1f6fb2" stroke-width="1.8" fill="none" marker-end="url(#arrowblue)"/>
-  <rect x="288" y="290" width="248" height="36" fill="#ffffff" opacity="0.92"/>
-  <text x="294" y="305" font-size="12" fill="#1f6fb2">fetch localhost:3000/trigger,</text>
-  <text x="294" y="321" font-size="12" fill="#1f6fb2">/result/:id (retry w/ backoff)</text>
 
   <!-- service -> redis -->
   <path d="M 600 452 L 770 380" stroke="#2c3e50" stroke-width="1.8" fill="none" marker-end="url(#arrow)"/>
-  <rect x="608" y="392" width="160" height="20" fill="#ffffff" opacity="0.92"/>
-  <text x="612" y="407" font-size="12" fill="#2c3e50">INCR ids &#183; GET id-{id}</text>
 
   <!-- service -> rabbitmq -->
-  <path d="M 600 512 L 770 516" stroke="#2c3e50" stroke-width="1.8" fill="none" marker-end="url(#arrow)"/>
+  <path d="M 600 512 L 770 492" stroke="#2c3e50" stroke-width="1.8" fill="none" marker-end="url(#arrow)"/>
+
+  <!-- rabbitmq -> worker -->
+  <path d="M 895 536 L 895 570" stroke="#2c3e50" stroke-width="1.8" fill="none" marker-end="url(#arrow)"/>
+
+  <!-- worker -> redis -->
+  <path d="M 770 618 C 672 618, 690 470, 786 410" stroke="#2c3e50" stroke-width="1.8" fill="none" marker-end="url(#arrow)"/>
+
+  <!-- metrics -> rabbitmq (poll queue depth) -->
+  <path d="M 1020 725 C 1085 725, 1088 600, 1012 538" stroke="#1e8449" stroke-width="1.8" fill="none" marker-end="url(#arrowgreen)"/>
+
+  <!-- metrics -> redis (TS.ADD) -->
+  <path d="M 1020 755 C 1145 755, 1150 470, 1021 372" stroke="#1e8449" stroke-width="1.8" fill="none" marker-end="url(#arrowgreen)"/>
+
+  <!-- ================= edge labels ================= -->
+  <rect x="30" y="222" width="180" height="20" fill="#ffffff" opacity="0.9"/>
+  <text x="36" y="237" font-size="12" fill="#2c3e50">GET :8080 &#8212; HTML + JS</text>
+
+  <rect x="452" y="285" width="240" height="54" fill="#ffffff" opacity="0.92"/>
+  <text x="458" y="302" font-size="12" fill="#1f6fb2">fetch localhost:3000</text>
+  <text x="458" y="318" font-size="12" fill="#1f6fb2">/trigger &#183; /result/:id &#183; /messages</text>
+  <text x="458" y="334" font-size="12" fill="#1f6fb2">(retry w/ backoff, /messages 1&#215;/s)</text>
+
+  <rect x="608" y="392" width="160" height="38" fill="#ffffff" opacity="0.92"/>
+  <text x="612" y="407" font-size="12" fill="#2c3e50">INCR ids &#183; GET id-{id}</text>
+  <text x="612" y="423" font-size="12" fill="#2c3e50">TS.REVRANGE (10 pts)</text>
+
   <rect x="608" y="486" width="158" height="20" fill="#ffffff" opacity="0.92"/>
   <text x="612" y="501" font-size="12" fill="#2c3e50">publish {id} &#8594; queue</text>
 
-  <!-- rabbitmq -> worker -->
-  <path d="M 895 566 L 895 620" stroke="#2c3e50" stroke-width="1.8" fill="none" marker-end="url(#arrow)"/>
-  <rect x="908" y="575" width="160" height="20" fill="#ffffff" opacity="0.92"/>
-  <text x="912" y="590" font-size="12" fill="#2c3e50">consume (1 msg each)</text>
+  <rect x="795" y="543" width="160" height="20" fill="#ffffff" opacity="0.92"/>
+  <text x="799" y="558" font-size="12" fill="#2c3e50">consume (1 msg each)</text>
 
-  <!-- worker -> redis -->
-  <path d="M 770 668 C 672 668, 690 520, 786 420" stroke="#2c3e50" stroke-width="1.8" fill="none" marker-end="url(#arrow)"/>
   <rect x="606" y="560" width="132" height="20" fill="#ffffff" opacity="0.92"/>
   <text x="610" y="575" font-size="12" fill="#2c3e50">SET id-{id} result</text>
 
+  <rect x="1022" y="551" width="88" height="18" fill="#ffffff" opacity="0.92"/>
+  <text x="1026" y="564" font-size="11" fill="#1e8449">depth every 1s</text>
+
+  <rect x="1044" y="733" width="116" height="18" fill="#ffffff" opacity="0.92"/>
+  <text x="1048" y="746" font-size="11" fill="#1e8449">TS.ADD every 1s</text>
+
   <!-- ================= notes ================= -->
-  <text x="60" y="770" font-size="12" fill="#a5611a">* The worker lives ONLY in the internal backend network &#8212; its dependencies are baked into the image at build time (worker/Dockerfile), so it needs no internet at runtime.</text>
-  <text x="60" y="790" font-size="12" fill="#a5611a">* Redis &amp; RabbitMQ are unreachable from the browser &#8212; they live solely in the internal backend network.</text>
-  <text x="60" y="810" font-size="12" fill="#666">* depends_on + healthchecks: service &amp; worker wait for Redis and RabbitMQ to report healthy before starting.</text>
-  <text x="60" y="830" font-size="12" fill="#666">* Docker round-robins incoming queue messages across the 3 worker replicas; each worker sleeps 1s to simulate work.</text>
+  <text x="40" y="966" font-size="12" fill="#1e8449">* metrics polls the RabbitMQ queue depth every second and records it in the Redis TimeSeries &#8220;messages:count&#8221; (24 h retention); the service exposes it at GET /messages.</text>
+  <text x="40" y="986" font-size="12" fill="#a5611a">* Redis, RabbitMQ, worker and metrics live ONLY in the internal backend network &#8212; unreachable from users&#8217; browsers.</text>
+  <text x="40" y="1006" font-size="12" fill="#666">* depends_on + healthchecks: service, worker &amp; metrics wait for Redis and RabbitMQ to report healthy before starting.</text>
+  <text x="40" y="1026" font-size="12" fill="#666">* Docker round-robins incoming queue messages across the 3 worker replicas; each worker sleeps 1s to simulate work.</text>
 </svg>
