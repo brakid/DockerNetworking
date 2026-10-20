@@ -1,0 +1,19 @@
+{
+  "name": "service",
+  "module": "index.tsx",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "typecheck": "bun check"
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^7"
+  },
+  "dependencies": {
+    "amqplib": "^2.2.0",
+    "bun-routes-cors": "^0.2.4"
+  }
+}

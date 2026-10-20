@@ -1,0 +1,94 @@
+name: networking
+
+services:
+    database:
+        image: redis:alpine
+        restart: unless-stopped
+        environment:
+            - REDIS_PASSWORD=secret
+        networks:
+            - backend
+        healthcheck:
+            test: ["CMD", "redis-cli", "ping"]
+            interval: 10s
+            timeout: 5s
+            retries: 3
+            start_period: 5s
+    service:
+        image: oven/bun:1.4.3-alpine
+        command: bun run /app/index.ts
+        restart: unless-stopped
+        environment:
+            - REDIS_PASSWORD=secret
+            - QUEUE_NAME=messages
+        volumes:
+            - ./service:/app:ro
+        depends_on:
+            database:
+                condition: service_healthy
+            rabbitmq:
+                condition: service_healthy
+        ports:
+            - 3000:3000
+        networks:
+            - backend
+            - frontend
+    ui:
+        image: nginx:alpine
+        restart: unless-stopped
+        volumes:
+            - ./website:/usr/share/nginx/html:ro
+        depends_on:
+            - service
+        ports:
+            - 8080:80
+        networks:
+            - frontend
+    rabbitmq:
+        image: rabbitmq:4-alpine
+        restart: unless-stopped
+        networks:
+            - backend
+        healthcheck:
+            test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+            interval: 10s
+            timeout: 5s
+            retries: 3
+            start_period: 15s
+
+    worker:
+        image: python:3.14-slim
+        restart: unless-stopped
+        command: >
+            sh -c "pip install -r requirements.txt && python3.14 worker.py"
+        volumes:
+            - ./worker:/app:ro
+        environment:
+            - REDIS_PASSWORD=secret
+            - QUEUE_NAME=messages
+            - PYTHONUNBUFFERED=1
+        deploy:
+            replicas: 3
+        working_dir: /app
+        depends_on:
+            database:
+                condition: service_healthy
+            rabbitmq:
+                condition: service_healthy
+        networks:
+            - backend
+            # needed for pip install
+            - frontend
+
+networks:
+    backend:
+        internal: true
+        ipam:
+            config:
+                - subnet: 172.16.0.0/24
+    frontend:
+        ipam:
+            config:
+                - subnet: 172.16.1.0/24
+                  gateway: 172.16.1.254
+
