@@ -7,18 +7,14 @@ const connection = await connect('amqp://rabbitmq');
 const channel = await connection.createChannel();
 
 const queueName = Bun.env.QUEUE_NAME!;
+const timeseries = Bun.env.TIMESERIES!;
+console.log("Timeseries:", timeseries);
 await channel.assertQueue(queueName, {
   durable: true,
   arguments: {
     "x-queue-type": "quorum"
   }
 });
-
-interface Result {
-    id: string,
-    worker: string,
-    timestamp: string
-};
 
 console.log(`Listening to port 3000`);
 Bun.serve({ 
@@ -43,6 +39,17 @@ Bun.serve({
                     );
                 }
                 return Response.json(result);
+            },
+        },
+        "/messages": {
+            GET: async (req) => {
+                const results = await client.send("TS.REVRANGE", [timeseries, "-", "+", "COUNT", "10"]) as [[number, string]];
+
+                return Response.json(results.map(datapoint => {
+                    const date = new Date(datapoint[0]);
+                    const messageCount = parseInt(datapoint[1]);
+                    return { date, messageCount };
+                }));
             },
         },
         "/": () => new Response("Home"),

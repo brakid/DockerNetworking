@@ -21,6 +21,7 @@ services:
         environment:
             - REDIS_PASSWORD=secret
             - QUEUE_NAME=messages
+            - TIMESERIES=messages:count
         volumes:
             - ./service:/app:ro
         depends_on:
@@ -60,14 +61,29 @@ services:
         build: ./worker
         image: networking-worker
         restart: unless-stopped
-        volumes:
-            - ./worker:/app:ro
         environment:
             - REDIS_PASSWORD=secret
             - QUEUE_NAME=messages
             - PYTHONUNBUFFERED=1
         deploy:
             replicas: 3
+        depends_on:
+            database:
+                condition: service_healthy
+            rabbitmq:
+                condition: service_healthy
+        networks:
+            - backend
+
+    metrics:
+        build: ./metrics
+        image: networking-metrics
+        restart: unless-stopped
+        environment:
+            - REDIS_PASSWORD=secret
+            - QUEUE_NAME=messages
+            - TIMESERIES=messages:count
+            - PYTHONUNBUFFERED=1
         depends_on:
             database:
                 condition: service_healthy

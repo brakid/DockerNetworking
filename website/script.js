@@ -6,7 +6,7 @@
     }
 
     async function fetchWithRetry(input, maxAttempts = 5, attempt = 0, ) {
-        console.log("Attempt:", attempt);
+        //console.log("Attempt:", attempt);
         const result = await fetch(input);
         if ((result.status !== 200) && attempt < maxAttempts) {
             const delay = Math.floor(200 * Math.pow(1.6, attempt));
@@ -18,6 +18,13 @@
     }
 
     const element = document.getElementById("message");
+    const metricsElement = document.getElementById("metrics");
+
+    setInterval(async () => {
+        const metrics = await (await fetchWithRetry("http://localhost:3000/messages")).json();
+        metricsElement.innerHTML = `Datapoints: ${metrics.length}, ${metrics.length > 0 && JSON.stringify(metrics[0])}`;
+    }, 1000);
+
     const message = await (await fetchWithRetry("http://localhost:3000/trigger")).json();
     element.innerHTML = "Loading";
     const result = await fetchWithRetry(`http://localhost:3000/result/${message.id}`, 10);
