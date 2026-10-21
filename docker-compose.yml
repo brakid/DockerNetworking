@@ -15,22 +15,20 @@ services:
             retries: 3
             start_period: 5s
     service:
-        image: oven/bun:1.4.3-alpine
-        command: bun run /app/index.ts
+        build: ./service
+        image: networking-service
         restart: unless-stopped
         environment:
             - REDIS_PASSWORD=secret
             - QUEUE_NAME=messages
             - TIMESERIES=messages:count
-        volumes:
-            - ./service:/app:ro
         depends_on:
             database:
                 condition: service_healthy
             rabbitmq:
                 condition: service_healthy
         ports:
-            - 3000:3000
+            - 0.0.0.0:3000:3000
         networks:
             - backend
             - frontend
@@ -42,7 +40,7 @@ services:
         depends_on:
             - service
         ports:
-            - 8080:80
+            - 0.0.0.0:8080:80
         networks:
             - frontend
     rabbitmq:
